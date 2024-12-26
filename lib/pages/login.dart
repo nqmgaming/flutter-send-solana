@@ -10,7 +10,6 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-
   final _formKey = GlobalKey<FormState>();
   final passwordController = TextEditingController();
   bool validationFailed = false;
@@ -24,7 +23,7 @@ class _LoginScreenState extends State<LoginScreen> {
     super.initState();
 
     _checkForSavedLogin().then((credentialsFound) {
-      if (!credentialsFound) {
+      if (!credentialsFound && mounted) {
         GoRouter.of(context).go("/setup");
       } else {
         setState(() {
@@ -34,6 +33,7 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
+  @override
   Widget build(BuildContext context) {
     if (_loading) {
       return const Center(

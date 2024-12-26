@@ -55,15 +55,15 @@ class _InputPhraseScreenState extends State<InputPhraseScreen> {
             ),
           ),
           Text(validationFailed ? 'Invalid keyphrase' : '',
-              style: TextStyle(color: Colors.red)),
-          Spacer(),
+              style: const TextStyle(color: Colors.red)),
+          const Spacer(),
           SizedBox(
             width: 200,
             child: TextButton(
               onPressed: () {
                 _onSubmit(context);
               },
-              child: Text('Continue'),
+              child: const Text('Continue'),
             ),
           ),
         ],

@@ -13,14 +13,13 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
-
   cupertino_icons: ^1.0.2
   go_router: ^10.0.0
   solana: ^0.29.1
   bip39: ^1.0.6
   flutter_secure_storage: ^8.0.0
   flutter_dotenv: ^5.1.0
+  solana_mobile_client: ^0.1.1+1
 
 
 dev_dependencies:
