@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:web3_login/pages/generatePhrase.dart';
-import 'package:web3_login/pages/home.dart';
-import 'package:web3_login/pages/inputPhrase.dart';
-import 'package:web3_login/pages/login.dart';
-import 'package:web3_login/pages/setupAccount.dart';
-import 'package:web3_login/pages/setupPassword.dart';
+import 'package:web3_login/pages/generate_phrase_page.dart';
+import 'package:web3_login/pages/home_page.dart';
+import 'package:web3_login/pages/input_phrase_page.dart';
+import 'package:web3_login/pages/login_page.dart';
+import 'package:web3_login/pages/setup_account_page.dart';
+import 'package:web3_login/pages/setup_password_page.dart';
 
 void main() {
   runApp(const MyApp());
