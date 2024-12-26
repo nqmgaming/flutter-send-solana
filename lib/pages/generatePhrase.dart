@@ -12,7 +12,6 @@ class GeneratePhraseScreen extends StatefulWidget {
 
 class _GeneratePhraseScreenState extends State<GeneratePhraseScreen> {
   String _mnemonic = "";
-  Icon iconButton = const Icon(Icons.copy);
   bool _copied = false;
 
   @override
@@ -21,89 +20,101 @@ class _GeneratePhraseScreenState extends State<GeneratePhraseScreen> {
     _generateMnemonic();
   }
 
+  Future<void> _generateMnemonic() async {
+    final mnemonic = bip39.generateMnemonic();
+    setState(() {
+      _mnemonic = mnemonic;
+    });
+  }
+
+  void _copyToClipboard() {
+    Clipboard.setData(ClipboardData(text: _mnemonic));
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Recovery phrase copied to clipboard")),
+    );
+    setState(() {
+      _copied = true;
+    });
+  }
+
+  Widget _buildHeader() {
+    return Container(
+      color: Colors.orange[700],
+      padding: const EdgeInsets.all(8),
+      child: const Text(
+        'Important! Copy and save the recovery phrase in a secure location. This cannot be recovered later.',
+        style: TextStyle(fontWeight: FontWeight.bold),
+      ),
+    );
+  }
+
+  Widget _buildMnemonicDisplay() {
+    return Container(
+      padding: const EdgeInsets.all(8),
+      child: Text(
+        _mnemonic,
+        textAlign: TextAlign.justify,
+        style: const TextStyle(
+          fontSize: 18,
+          height: 1.5,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCopyButton() {
+    return IconButton(
+      onPressed: _copyToClipboard,
+      icon: Icon(_copied ? Icons.check : Icons.copy),
+    );
+  }
+
+  Widget _buildAcknowledgementCheckbox() {
+    return Row(
+      children: [
+        Checkbox(
+          value: _copied,
+          onChanged: (value) {
+            setState(() {
+              _copied = value ?? false;
+            });
+          },
+        ),
+        const Text("I have stored the recovery phrase securely"),
+      ],
+    );
+  }
+
+  Widget _buildActionButton() {
+    return ElevatedButton(
+      onPressed: _copied
+          ? () => GoRouter.of(context).go("/passwordSetup/$_mnemonic")
+          : () => GoRouter.of(context).go("/"),
+      child: Text(_copied ? 'Continue' : 'Go Back'),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Recovery Phrase")),
       body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Flexible(
-            child: Container(
-              color: Colors.orange[700],
+          _buildHeader(),
+          const SizedBox(height: 20),
+          Expanded(
+            child: SingleChildScrollView(
               padding: const EdgeInsets.all(8),
-              child: const Text(
-                'Important! Copy and save the recovery phrase in a secure location. This cannot be recovered later.',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
+              child: _buildMnemonicDisplay(),
             ),
           ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Center(
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  child: Text(
-                    _mnemonic,
-                    textAlign: TextAlign.justify,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      height: 1.5,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  IconButton(
-                    onPressed: () {
-                      Clipboard.setData(ClipboardData(text: _mnemonic));
-                      setState(() {
-                        iconButton = const Icon(Icons.check);
-                      });
-                    },
-                    icon: iconButton,
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  Checkbox(
-                    value: _copied,
-                    onChanged: (value) {
-                      setState(() {
-                        _copied = value!;
-                      });
-                    },
-                  ),
-                  const Text("I have stored the recovery phrase securely"),
-                ],
-              ),
-              ElevatedButton(
-                onPressed: _copied
-                    ? () {
-                        GoRouter.of(context).go("/passwordSetup/$_mnemonic");
-                      }
-                    : () {
-                        GoRouter.of(context).go("/");
-                      },
-                child: Text(_copied ? 'Continue' : 'Go Back'),
-              )
-            ],
-          ),
+          _buildCopyButton(),
+          _buildAcknowledgementCheckbox(),
+          const SizedBox(height: 10),
+          _buildActionButton(),
+          const SizedBox(height: 20),
         ],
       ),
     );
-  }
-
-  Future<void> _generateMnemonic() async {
-    String mnemonic = bip39.generateMnemonic();
-
-    setState(() {
-      _mnemonic = mnemonic;
-    });
   }
 }

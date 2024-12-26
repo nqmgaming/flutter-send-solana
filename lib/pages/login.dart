@@ -41,73 +41,67 @@ class _LoginScreenState extends State<LoginScreen> {
       );
     }
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Login'),
+      ),
       body: SingleChildScrollView(
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const SizedBox(height: 40),
-          Center(
-            child: Image.asset(
-              'assets/QuickNodeLogo.png',
-              width: 200,
-            ),
-          ),
-          const SizedBox(height: 16),
-          const Padding(
-            padding: EdgeInsets.only(left: 16),
-            child: Text(
-              'Login',
-              style: TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Form(
-            key: _formKey,
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  TextFormField(
-                      controller: passwordController,
-                      obscureText: true,
-                      decoration: const InputDecoration(
-                        labelText: 'Password',
-                        border: OutlineInputBorder(),
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Image.asset(
+                  'assets/QuickNodeLogo.png',
+                  width: 100,
+                ),
+                const SizedBox(height: 16),
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        controller: passwordController,
+                        obscureText: true,
+                        decoration: const InputDecoration(
+                          labelText: 'Password',
+                          border: OutlineInputBorder(),
+                        ),
+                        validator: (value) {
+                          if (value != password) {
+                            setState(() {
+                              validationFailed = true;
+                            });
+                            return 'Invalid Password';
+                          }
+                          return null;
+                        },
                       ),
-                      validator: (value) {
-                        if (value != password) {
-                          setState(() {
-                            validationFailed = true;
-                          });
-                          return;
-                        }
-                        GoRouter.of(context).go("/home");
-                        // Validation
-                      }),
-                  const SizedBox(height: 8),
-                  Text(validationFailed ? 'Invalid Password' : '',
-                      style: const TextStyle(color: Colors.red)),
-                  const SizedBox(height: 8),
-                  ElevatedButton(
-                    onPressed: _onSubmit,
-                    child: const Text('Login'),
+                      const SizedBox(height: 8),
+                      if (validationFailed)
+                        const Text(
+                          'Invalid Password',
+                          style: TextStyle(color: Colors.red),
+                        ),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: _onSubmit,
+                        child: const Text('Login'),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 32),
-                  Center(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        onDifferentAccountPressed(context);
-                      },
-                      child: const Text('Use different Account'),
-                    ),
-                  ),
-                ],
-              ),
+                ),
+                const SizedBox(height: 32),
+                ElevatedButton(
+                  onPressed: () => onDifferentAccountPressed(context),
+                  child: const Text('Use different Account'),
+                ),
+              ],
             ),
           ),
-        ]),
+        ),
       ),
     );
   }
@@ -115,42 +109,37 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<bool> _checkForSavedLogin() async {
     key = await storage.read(key: 'mnemonic');
     password = await storage.read(key: 'password');
-    if (key == null || password == null) {
-      return false;
-    } else {
-      return true;
-    }
+    return key != null && password != null;
   }
 
-  Future<dynamic> onDifferentAccountPressed(BuildContext context) async {
+  Future<void> onDifferentAccountPressed(BuildContext context) async {
     return showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text('Warning'),
-            content: const Text(
-                'Access to current account will be lost if seed phrase is lost.'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Text('Cancel'),
-              ),
-              TextButton(
-                onPressed: () {
-                  GoRouter.of(context).go("/setup");
-                },
-                child: const Text('OK'),
-              ),
-            ],
-          );
-        });
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Warning'),
+          content: const Text(
+              'Access to the current account will be lost if the seed phrase is lost.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                GoRouter.of(context).go("/setup");
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
-  void _onSubmit() async {
+  void _onSubmit() {
     if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
+      GoRouter.of(context).go("/home");
     }
   }
 }
